@@ -1,4 +1,4 @@
-from scrape_forecasts import download_zips, extract_zips, cleanup
+from scrape_forecasts import download_zips, extract_all_zip_files, cleanup
 from import_downloaded_data import import_shapefiles_to_bq
 from find_hurricanes_to_scrape import url_for_every_storm
 
@@ -15,11 +15,8 @@ if __name__ == "__main__":
         print("-" * 40)
 
         download_zips(url=url)
-        extract_zips()
 
 
-
-
-        # import_shapefiles_to_bq()
-
+    # extract_all_zip_files()
+    # import_shapefiles_to_bq()
     # cleanup()

@@ -18,7 +18,11 @@ def _get_soup(url):
 
 
 def download_zips(url=URL, domain=DOMAIN):
+    """
+    Download all .zip files linked in the provided url
+    """
     for link in _get_soup(url).findAll("a", attrs={'href': re.compile(".zip")}):
+
         file_link = link.get('href')
         print(f"Downloading {file_link}")
 
@@ -26,7 +30,8 @@ def download_zips(url=URL, domain=DOMAIN):
             response = requests.get(domain + file_link)
             file.write(response.content)
 
-def extract_zips():
+def extract_all_zip_files():
+
     for z in LOCAL_DOWNLOAD_FOLDER.rglob("*.zip"):
         with ZipFile(z, 'r') as zf:
             zf.extractall(path=LOCAL_EXTRACTED_FOLDER)
