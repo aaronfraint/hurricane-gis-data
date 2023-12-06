@@ -8,7 +8,6 @@ from google.cloud import bigquery
 from params import LOCAL_EXTRACTED_FOLDER
 
 BQ_DATASET = "hackathon_workflows_2023"
-HURRICANE_NAME = "2012_sandy"
 
 SHAPE_TYPES = ["lin", "pts", "pgn", "wwlin"]
 
@@ -23,7 +22,7 @@ def _shapefiles_to_convert():
         data_type = shp.stem.split("_")[-1]
 
         # Some dates have two files, one ending in 'A'. Let's omit those
-        if "A" not in shp.stem:
+        if "A" not in shp.stem.split("_")[-1].upper():
             shapefiles[data_type].append(shp)
 
     return shapefiles
@@ -65,12 +64,16 @@ def _convert_gdf_to_json(df):
     )
 
 
-def import_shapefiles_to_bq(bq_tablename=HURRICANE_NAME):
+def import_shapefiles_to_bq():
     client = bigquery.Client()
 
     shapefiles = _shapefiles_to_convert()
 
     for shape_type in SHAPE_TYPES:
+
+        if shape_type == 'wwlin':
+            break
+
         print("-" * 40)
         print(shape_type)
         print("-" * 40)
@@ -78,7 +81,7 @@ def import_shapefiles_to_bq(bq_tablename=HURRICANE_NAME):
         for shp in shapefiles[shape_type]:
             print(shp)
 
-            table_id = f"{BQ_DATASET}.hurricane_{bq_tablename}_{shape_type}"
+            table_id = f"{BQ_DATASET}.noaa_advisory_{shape_type}"
 
             try:
                 df = gpd.read_file(shp)
