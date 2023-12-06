@@ -26,8 +26,11 @@ def _get_urls_for_single_year(year):
 def url_for_every_storm():
 
     urls = []
-    for year in range(2008, 2024):
-        # print(year)
+    for year in range(2014, 2024):
+
+        print("*" * 40)
+        print(year)
+        print("*" * 40)
         urls_for_this_year = _get_urls_for_single_year(year)
 
         for url in urls_for_this_year:
