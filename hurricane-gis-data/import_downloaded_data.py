@@ -5,16 +5,17 @@ import shapely
 from shapely.validation import make_valid
 from google.cloud import bigquery
 
-from params import LOCAL_EXTRACTED_FOLDER
+from _params import LOCAL_EXTRACTED_FOLDER
 
 BQ_DATASET = "hackathon_workflows_2023"
 
 SHAPE_TYPES = ["lin", "pts", "pgn", "wwlin"]
 
 
-
 def _shapefiles_to_convert():
-    """Get a dictionary of all shapefiles to be imported, organized by geometry type"""
+    """
+    Get a dictionary of all shapefiles to be imported, organized by geometry type
+    """
 
     shapefiles = {x: [] for x in SHAPE_TYPES}
 
@@ -29,6 +30,9 @@ def _shapefiles_to_convert():
 
 
 def _get_schema(df):
+    """
+    Convert dataframe schema to BQ schema
+    """
     type_dict = {
         "b": "BOOLEAN",
         "i": "INTEGER",
@@ -50,6 +54,9 @@ def _get_schema(df):
 
 
 def _convert_gdf_to_json(df):
+    """
+    Convert geodataframe to JSON representation
+    """
     return pd.DataFrame(
         {
             col: (
@@ -65,23 +72,25 @@ def _convert_gdf_to_json(df):
 
 
 def import_shapefiles_to_bq():
+    """
+    Import the polygon, point, and line shapefiles to BQ
+    """
     client = bigquery.Client()
 
     shapefiles = _shapefiles_to_convert()
 
     for shape_type in SHAPE_TYPES:
-
-        if shape_type == 'wwlin':
+        if shape_type == "wwlin":
             break
 
         print("-" * 40)
         print(shape_type)
         print("-" * 40)
 
+        table_id = f"{BQ_DATASET}.noaa_advisory_{shape_type}"
+
         for shp in shapefiles[shape_type]:
             print(shp)
-
-            table_id = f"{BQ_DATASET}.noaa_advisory_{shape_type}"
 
             try:
                 df = gpd.read_file(shp)
