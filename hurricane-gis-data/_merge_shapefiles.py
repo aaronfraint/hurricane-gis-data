@@ -3,7 +3,7 @@ import geopandas as gpd
 from _params import LOCAL_EXTRACTED_FOLDER
 
 
-def merge_shapefiles(shape_type="lin"):
+def merge_shapefiles(shape_type="pgn"):
     """
     Merge all shapefiles of a single geometry type
     """

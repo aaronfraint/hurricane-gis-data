@@ -1,18 +1,13 @@
 import sys
 
 from _scrape_forecasts import download_zips, extract_all_zip_files
-from _import_downloaded_data import import_shapefiles_to_bq
+from _import_downloaded_data import import_shapefile_to_bq
 from _find_hurricanes_to_scrape import url_for_every_storm
-
-# hurricanes = {
-#     # "2012_sandy": "https://www.nhc.noaa.gov/gis/archive_forecast_results.php?id=al18&year=2012&name=Hurricane%20SANDY",
-#     # "2017_irma": "https://www.nhc.noaa.gov/gis/archive_forecast_results.php?id=al11&year=2017&name=Hurricane%20IRMA",
-#     "2023_idalia": "https://www.nhc.noaa.gov/gis/archive_forecast_results.php?id=al10&year=2023&name=Hurricane%20IDALIA"
-# }
+from _merge_shapefiles import merge_shapefiles
 
 
-def main(process):
-    print(f"This is the main module, {process}")
+def main(args):
+    process = args[1]
 
     if process == "download":
         for url in url_for_every_storm():
@@ -25,9 +20,12 @@ def main(process):
     elif process == "extract":
         extract_all_zip_files()
 
+    elif process == "merge":
+        merge_shapefiles(shape_type=args[2])
+
     elif process == "bq":
-        import_shapefiles_to_bq()
+        import_shapefile_to_bq("merged_pgn.shp")
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv)

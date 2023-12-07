@@ -71,40 +71,37 @@ def _convert_gdf_to_json(df):
     )
 
 
-def import_shapefiles_to_bq():
+def import_shapefile_to_bq(shp_path):
     """
     Import the polygon, point, and line shapefiles to BQ
     """
     client = bigquery.Client()
 
-    shapefiles = _shapefiles_to_convert()
+    # shapefiles = _shapefiles_to_convert()
 
-    for shape_type in SHAPE_TYPES:
-        if shape_type == "wwlin":
-            break
+    # for shape_type in SHAPE_TYPES:
+    #     if shape_type == "wwlin":
+    #         break
 
-        print("-" * 40)
-        print(shape_type)
-        print("-" * 40)
+        # print("-" * 40)
+        # print(shape_type)
+        # print("-" * 40)
 
-        table_id = f"{BQ_DATASET}.noaa_advisory_{shape_type}"
+    table_id = f"{BQ_DATASET}.noaa_all_years"
 
-        for shp in shapefiles[shape_type]:
-            print(shp)
+    try:
+        df = gpd.read_file(shp_path)
 
-            try:
-                df = gpd.read_file(shp)
+        schema = _get_schema(df)
 
-                schema = _get_schema(df)
+        df_json = _convert_gdf_to_json(df)
 
-                df_json = _convert_gdf_to_json(df)
+        job_config = bigquery.LoadJobConfig(schema=schema)
 
-                job_config = bigquery.LoadJobConfig(schema=schema)
+        job = client.load_table_from_dataframe(
+            df_json, table_id, job_config=job_config
+        )
+        job.result()
 
-                job = client.load_table_from_dataframe(
-                    df_json, table_id, job_config=job_config
-                )
-                job.result()
-
-            except Exception as e:
-                print(e)
+    except Exception as e:
+        print(e)
