@@ -1,5 +1,5 @@
 create or replace table
-  hackathon_workflows_2023.all_years_pgn_timestamp
+  hackathon_workflows_2023.all_years_pgn_timestamp_forecast_period_72
 cluster by geom
 as
 
@@ -12,7 +12,7 @@ with verbose_date as (
   SPLIT(ADVDATE, ' ')[ordinal(6)] as day,
   SPLIT(ADVDATE, ' ')[ordinal(7)] as year, ADVDATE, geom, stormname, stormtype
 FROM `cartodb-gcp-solutions-eng-team.hackathon_workflows_2023.all_years_pgn`
-where advdate not like '%/%' and st_geometrytype(geom) != 'ST_Point'
+where advdate not like '%/%' and st_geometrytype(geom) != 'ST_Point' and FCSTPRD = 72
 ),
 slash_date as (
   SELECT
@@ -24,7 +24,7 @@ slash_date as (
     geom,
     stormname, stormtype, 
   FROM `cartodb-gcp-solutions-eng-team.hackathon_workflows_2023.all_years_pgn`
-  where advdate  like '%/%' and length(advdate) = 11 and st_geometrytype(geom) != 'ST_Point'
+  where advdate  like '%/%' and length(advdate) = 11 and st_geometrytype(geom) != 'ST_Point' and FCSTPRD = 72
 ),
 converted as (
   select
@@ -46,4 +46,4 @@ converted as (
 )
 
 select *
-from converted order by dt
+from converted
